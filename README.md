@@ -1,12 +1,11 @@
-# HALLBOOK — Function Hall Booking Marketplace
+# Potla EventSpaces — Backend API & Infrastructure
 
-HallBook is a production-grade Function Hall Booking Platform connecting customers searching for banquet halls, convention centers, and lawns with venue owners and platform administrators.
+Production-grade Django REST Framework backend and containerized infrastructure for the Potla EventSpaces function hall booking platform.
 
 ---
 
 ## 1. Technology Stack
 
-- **Frontend**: React 18, Tailwind CSS (v4), React Router 6, Axios, Lucide React Icons, Vite
 - **Backend API**: Python 3.13, Django 5/6, Django REST Framework, drf-spectacular (OpenAPI 3)
 - **Primary Database**: PostgreSQL 16/17 (Authoritative ACID data store, row-level locking)
 - **Caching & Broker**: Redis 7
@@ -26,13 +25,19 @@ HallBook is a production-grade Function Hall Booking Platform connecting custome
 
 ## 3. Quickstart & Local Development
 
-### Prerequisites
+### Option A: Run via Docker Compose (Recommended)
+```bash
+docker compose up --build
+```
+
+### Option B: Manual Local Setup
+
+#### Prerequisites
 - Python 3.11+
-- Node.js 20+
 - PostgreSQL 16+
 - Redis 7+
 
-### 1. Database & Cache Setup
+#### 1. Database & Cache Setup
 ```bash
 # Start PostgreSQL & Redis services
 sudo service postgresql start
@@ -43,20 +48,12 @@ sudo -u postgres psql -c "CREATE USER hallbook_user WITH PASSWORD 'hallbook_secu
 sudo -u postgres psql -c "CREATE DATABASE hallbook_db OWNER hallbook_user;"
 ```
 
-### 2. Backend Setup
+#### 2. Backend Setup
 ```bash
 pip install -r requirements.txt
 python backend/manage.py migrate
 python backend/manage.py test
 python backend/manage.py runserver 0.0.0.0:8000
-```
-
-### 3. Frontend Setup
-```bash
-cd frontend
-npm install
-npm run build
-npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
 ---
@@ -66,3 +63,6 @@ npm run dev -- --host 0.0.0.0 --port 5173
 - **Readiness Probe**: `GET /api/v1/ready/`
 - **Interactive OpenAPI 3 / Swagger**: `GET /api/docs/`
 - **Redoc Specification**: `GET /api/redoc/`
+
+---
+*Looking for the React client application? Check the [`fhbp-frontend`](https://github.com/wasimakramshaikdev/fhbp-frontend) repository.*
