@@ -1,0 +1,553 @@
+# # version: '3.8'
+
+# services:
+#   postgres:
+#     image: postgres:16-alpine
+#     container_name: hallbook_postgres
+#     restart: unless-stopped
+#     environment:
+#       POSTGRES_DB: hallbook_db
+#       POSTGRES_USER: hallbook_user
+#       POSTGRES_PASSWORD: hallbook_secure_password
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#     ports:
+#       - "5432:5432"
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -U hallbook_user -d hallbook_db"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+
+#   redis:
+#     image: redis:7-alpine
+#     container_name: hallbook_redis
+#     restart: unless-stopped
+#     ports:
+#       - "6379:6379"
+#     healthcheck:
+#       test: ["CMD", "redis-cli", "ping"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+
+#   backend:
+#     build:
+#       context: .
+#       dockerfile: infrastructure/docker/Dockerfile.backend
+#     container_name: hallbook_backend
+#     restart: unless-stopped
+#     env_file:
+#       - .env
+#     depends_on:
+#       postgres:
+#         condition: service_healthy
+#       redis:
+#         condition: service_healthy
+#     ports:
+#       - "8000:8000"
+#     volumes:
+#       - ./media:/app/media
+#       - ./static:/app/static
+
+#   celery-worker:
+#     build:
+#       context: .
+#       dockerfile: infrastructure/docker/Dockerfile.backend
+#     container_name: hallbook_celery_worker
+#     restart: unless-stopped
+#     command: ["celery", "-A", "config", "worker", "-l", "info", "-Q", "default,payments,emails,media"]
+#     working_dir: /app/backend
+#     env_file:
+#       - .env
+#     depends_on:
+#       postgres:
+#         condition: service_healthy
+#       redis:
+#         condition: service_healthy
+
+#   celery-beat:
+#     build:
+#       context: .
+#       dockerfile: infrastructure/docker/Dockerfile.backend
+#     container_name: hallbook_celery_beat
+#     restart: unless-stopped
+#     command: ["celery", "-A", "config", "beat", "-l", "info"]
+#     working_dir: /app/backend
+#     env_file:
+#       - .env
+#     depends_on:
+#       postgres:
+#         condition: service_healthy
+#       redis:
+#         condition: service_healthy
+
+#   frontend:
+#     build:
+#       context: .
+#       dockerfile: infrastructure/docker/Dockerfile.frontend
+#     container_name: hallbook_frontend
+#     restart: unless-stopped
+#     ports:
+#       - "80:80"
+#     depends_on:
+#       - backend
+
+# volumes:
+#   postgres_data:
+
+
+
+# services:
+
+#   # ==========================================================================
+#   # POSTGRESQL
+#   # ==========================================================================
+
+#   postgres:
+#     image: postgres:16-alpine
+#     container_name: hallbook_postgres
+#     restart: unless-stopped
+
+#     environment:
+#       POSTGRES_DB: hallbook_db
+#       POSTGRES_USER: hallbook_user
+#       POSTGRES_PASSWORD: hallbook_secure_password
+
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+
+#     ports:
+#       - "5432:5432"
+
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -U hallbook_user -d hallbook_db"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+
+
+#   # ==========================================================================
+#   # REDIS
+#   # ==========================================================================
+
+#   redis:
+#     image: redis:7-alpine
+#     container_name: hallbook_redis
+#     restart: unless-stopped
+
+#     ports:
+#       - "6379:6379"
+
+#     healthcheck:
+#       test: ["CMD", "redis-cli", "ping"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+
+
+#   # ==========================================================================
+#   # DJANGO BACKEND
+#   # ==========================================================================
+
+#   backend:
+#     build:
+#       context: .
+#       dockerfile: infrastructure/docker/Dockerfile.backend
+
+#     container_name: hallbook_backend
+#     restart: unless-stopped
+
+#     env_file:
+#       - .env
+
+#     depends_on:
+#       postgres:
+#         condition: service_healthy
+
+#       redis:
+#         condition: service_healthy
+
+#     ports:
+#       - "8000:8000"
+
+#     volumes:
+#       - ./media:/app/media
+#       - ./static:/app/static
+
+
+#   # ==========================================================================
+#   # CELERY WORKER
+#   # ==========================================================================
+
+#   celery-worker:
+#     build:
+#       context: .
+#       dockerfile: infrastructure/docker/Dockerfile.backend
+
+#     container_name: hallbook_celery_worker
+#     restart: unless-stopped
+
+#     command:
+#       [
+#         "celery",
+#         "-A",
+#         "config",
+#         "worker",
+#         "-l",
+#         "info",
+#         "-Q",
+#         "default,payments,emails,media"
+#       ]
+
+#     working_dir: /app/backend
+
+#     env_file:
+#       - .env
+
+#     depends_on:
+#       postgres:
+#         condition: service_healthy
+
+#       redis:
+#         condition: service_healthy
+
+
+#   # ==========================================================================
+#   # CELERY BEAT
+#   # ==========================================================================
+
+#   celery-beat:
+#     build:
+#       context: .
+#       dockerfile: infrastructure/docker/Dockerfile.backend
+
+#     container_name: hallbook_celery_beat
+#     restart: unless-stopped
+
+#     command:
+#       [
+#         "celery",
+#         "-A",
+#         "config",
+#         "beat",
+#         "-l",
+#         "info"
+#       ]
+
+#     working_dir: /app/backend
+
+#     env_file:
+#       - .env
+
+#     depends_on:
+#       postgres:
+#         condition: service_healthy
+
+#       redis:
+#         condition: service_healthy
+
+
+#   # ==========================================================================
+#   # PGADMIN - POSTGRESQL WEB UI
+#   # ==========================================================================
+
+#   pgadmin:
+#     image: dpage/pgadmin4:latest
+#     container_name: hallbook_pgadmin
+#     restart: unless-stopped
+
+#     environment:
+#       PGADMIN_DEFAULT_EMAIL: admin@hallbook.com
+#       PGADMIN_DEFAULT_PASSWORD: admin123
+
+#     ports:
+#       - "5050:80"
+
+#     depends_on:
+#       postgres:
+#         condition: service_healthy
+
+
+#   # ==========================================================================
+#   # REDISINSIGHT - REDIS WEB UI
+#   # ==========================================================================
+
+#   redis-insight:
+#     image: redis/redisinsight:latest
+#     container_name: hallbook_redis_insight
+#     restart: unless-stopped
+
+#     ports:
+#       - "5540:5540"
+
+#     depends_on:
+#       redis:
+#         condition: service_healthy
+
+
+#   # ==========================================================================
+#   # FLOWER - CELERY MONITORING
+#   # ==========================================================================
+
+#   flower:
+#     image: mher/flower:latest
+#     container_name: hallbook_flower
+#     restart: unless-stopped
+
+#     command:
+#       [
+#         "celery",
+#         "--broker=redis://redis:6379/0",
+#         "flower",
+#         "--port=5555"
+#       ]
+
+#     ports:
+#       - "5555:5555"
+
+#     depends_on:
+#       redis:
+#         condition: service_healthy
+
+#       celery-worker:
+#         condition: service_started
+
+
+#   # ==========================================================================
+#   # FRONTEND
+#   # ==========================================================================
+
+#   frontend:
+#     build:
+#       context: .
+#       dockerfile: infrastructure/docker/Dockerfile.frontend
+
+#     container_name: hallbook_frontend
+#     restart: unless-stopped
+
+#     ports:
+#       - "80:80"
+
+#     depends_on:
+#       - backend
+
+
+# # =============================================================================
+# # VOLUMES
+# # =============================================================================
+
+# volumes:
+#   postgres_data:
+
+
+
+
+services:
+
+  # ==========================================================================
+  # POSTGRESQL
+  # ==========================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: hallbook_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hallbook_db
+      POSTGRES_USER: hallbook_user
+      POSTGRES_PASSWORD: hallbook_secure_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # Expose only to docker network, not public host (remove 5432:5432 for security)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hallbook_user -d hallbook_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================================================
+  # REDIS
+  # ==========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: hallbook_redis
+    restart: unless-stopped
+    # Expose only to docker network, not public host (remove 6379:6379 for security)
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================================================
+  # DJANGO BACKEND
+  # ==========================================================================
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: infrastructure/docker/Dockerfile.backend
+  #   container_name: hallbook_backend
+  #   restart: unless-stopped
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   volumes:
+  #     - static_volume:/app/backend/static
+  #     - media_volume:/app/backend/media
+  backend:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile.backend
+    container_name: hallbook_backend
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate --noinput && python manage.py seed_data && gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 config.wsgi:application"
+    # Ensure Gunicorn executes from the Django project root directory
+    working_dir: /app/backend
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - static_volume:/app/backend/static
+      - media_volume:/app/media
+  # ==========================================================================
+  # CELERY WORKER
+  # ==========================================================================
+  celery-worker:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile.backend
+    container_name: hallbook_celery_worker
+    restart: unless-stopped
+    command:
+      [
+        "celery",
+        "-A",
+        "config",
+        "worker",
+        "-l",
+        "info",
+        "-Q",
+        "default,payments,emails,media"
+      ]
+    working_dir: /app/backend
+    env_file:
+      - .env
+    volumes:
+      - media_volume:/app/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ==========================================================================
+  # CELERY BEAT
+  # ==========================================================================
+  celery-beat:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile.backend
+    container_name: hallbook_celery_beat
+    restart: unless-stopped
+    command:
+      [
+        "celery",
+        "-A",
+        "config",
+        "beat",
+        "-l",
+        "info"
+      ]
+    working_dir: /app/backend
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ==========================================================================
+  # PGADMIN - POSTGRESQL WEB UI
+  # ==========================================================================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: hallbook_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@hallbook.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ==========================================================================
+  # REDISINSIGHT - REDIS WEB UI
+  # ==========================================================================
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: hallbook_redis_insight
+    restart: unless-stopped
+    ports:
+      - "5540:5540"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # ==========================================================================
+  # FLOWER - CELERY MONITORING
+  # ==========================================================================
+  flower:
+    image: mher/flower:latest
+    container_name: hallbook_flower
+    restart: unless-stopped
+    command:
+      [
+        "celery",
+        "--broker=redis://redis:6379/0",
+        "flower",
+        "--port=5555"
+      ]
+    ports:
+      - "5555:5555"
+    depends_on:
+      redis:
+        condition: service_healthy
+      celery-worker:
+        condition: service_started
+
+  # ==========================================================================
+  # FRONTEND (Nginx Reverse Proxy + React)
+  # ==========================================================================
+  frontend:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile.frontend
+    container_name: hallbook_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    depends_on:
+      - backend
+
+# =============================================================================
+# VOLUMES
+# =============================================================================
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

@@ -1,0 +1,2551 @@
+openapi: 3.0.3
+info:
+  title: HallBook Function Hall Marketplace API
+  version: 1.0.0
+  description: Production-grade Function Hall Booking API for Customers, Owners, and
+    Super Admins
+paths:
+  /api/v1/admin/audit-logs/:
+    get:
+      operationId: v1_admin_audit_logs_retrieve
+      description: Super Admin filterable immutable audit trail.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/bookings/:
+    get:
+      operationId: v1_admin_bookings_retrieve
+      description: Super Admin real-time monitor across all marketplace bookings.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/dashboard/:
+    get:
+      operationId: v1_admin_dashboard_retrieve
+      description: |-
+        High-level platform metrics for Super Admin (Wireframe Admin Screen 1):
+        Total halls, Active owners, Bookings MTD, Commission revenue MTD, and Pending Approvals queue.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/disputes/:
+    get:
+      operationId: v1_admin_disputes_retrieve
+      description: Super Admin listing of all platform dispute cases.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/disputes/{id}/resolve/:
+    post:
+      operationId: v1_admin_disputes_resolve_create
+      description: 'Super Admin settles a dispute: issues refund to customer or releases
+        funds to owner.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/halls/:
+    get:
+      operationId: v1_admin_halls_retrieve
+      description: Super Admin listing of all halls with approval status filtering.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/halls/{id}/action/:
+    post:
+      operationId: v1_admin_halls_action_create
+      description: 'Super Admin decision: APPROVE, REJECT, or SUSPEND listing.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/owners/:
+    get:
+      operationId: v1_admin_owners_retrieve
+      description: |-
+        Super Admin Owner Directory (Wireframe Admin Screen 2):
+        Search by owner/hall name, filter by status, view venue count, joined date.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/owners/{id}/action/:
+    post:
+      operationId: v1_admin_owners_action_create
+      description: 'Super Admin actions on venue owners: APPROVE, SUSPEND, REACTIVATE.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/settings/:
+    get:
+      operationId: v1_admin_settings_retrieve
+      description: Super Admin configurable platform settings (Commission %, GST Tax
+        %, Advance %, Hold TTL).
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: v1_admin_settings_partial_update
+      description: Super Admin configurable platform settings (Commission %, GST Tax
+        %, Advance %, Hold TTL).
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/login/:
+    post:
+      operationId: v1_auth_login_create
+      description: Authenticate a user with email and password.
+      summary: Login
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+  /api/v1/auth/logout/:
+    post:
+      operationId: v1_auth_logout_create
+      description: Revoke the current refresh token and clear authentication cookies.
+      summary: Logout
+      tags:
+      - Authentication
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+  /api/v1/auth/me/:
+    get:
+      operationId: v1_auth_me_retrieve
+      description: Retrieve the profile of the currently authenticated user.
+      summary: Get current user
+      tags:
+      - Authentication
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+    patch:
+      operationId: v1_auth_me_partial_update
+      description: Update the profile of the currently authenticated user. Owner-specific
+        fields can also be updated for hall owners.
+      summary: Update current user
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileUpdateRequest'
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+  /api/v1/auth/password-reset/:
+    post:
+      operationId: v1_auth_password_reset_create
+      description: Request a password reset link. The endpoint intentionally returns
+        the same success response whether or not the email exists.
+      summary: Request password reset
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+  /api/v1/auth/password-reset/confirm/:
+    post:
+      operationId: v1_auth_password_reset_confirm_create
+      description: Set a new password using a valid, single-use password reset token.
+      summary: Confirm password reset
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+  /api/v1/auth/refresh/:
+    post:
+      operationId: v1_auth_refresh_create
+      description: Rotate the refresh token and return a new access token. The refresh
+        token may be supplied in the request body or HttpOnly cookie.
+      summary: Refresh access token
+      tags:
+      - Authentication
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshTokenResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+  /api/v1/auth/register/:
+    post:
+      operationId: v1_auth_register_create
+      description: Register a new customer or hall owner account. Hall owner registration
+        automatically creates an OwnerProfile.
+      summary: Register
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+  /api/v1/auth/verify-email/:
+    post:
+      operationId: v1_auth_verify_email_create
+      description: Verify a user email address using a valid, single-use email verification
+        token.
+      summary: Verify email
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+  /api/v1/bookings/:
+    get:
+      operationId: v1_bookings_list
+      description: Returns bookings belonging to the authenticated customer.
+      summary: List customer bookings
+      tags:
+      - Bookings
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingList'
+          description: ''
+  /api/v1/bookings/{booking_id}/review/:
+    post:
+      operationId: v1_bookings_review_create
+      description: |-
+        Customer submits a review on a verified COMPLETED booking.
+        Strictly restricted to completed bookings and booking owner.
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/bookings/{id}/:
+    get:
+      operationId: v1_bookings_retrieve
+      description: Returns complete booking details. Access is restricted to the customer,
+        hall owner, or administrator.
+      summary: Get booking details
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: string
+          format: uuid
+        description: Booking ID
+        required: true
+      tags:
+      - Bookings
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingDetail'
+          description: ''
+  /api/v1/bookings/{id}/accept/:
+    post:
+      operationId: v1_bookings_accept_create
+      description: Allows the hall owner to accept a pending booking request.
+      summary: Accept booking
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: string
+          format: uuid
+        description: Booking ID
+        required: true
+      tags:
+      - Bookings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingOwnerDecisionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookingOwnerDecisionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookingOwnerDecisionRequest'
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingDetail'
+          description: ''
+  /api/v1/bookings/{id}/cancel/:
+    post:
+      operationId: v1_bookings_cancel_create
+      description: Allows an authorized customer or hall owner to cancel an active
+        booking.
+      summary: Cancel booking
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: string
+          format: uuid
+        description: Booking ID
+        required: true
+      tags:
+      - Bookings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCancellationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookingCancellationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookingCancellationRequest'
+        required: true
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingDetail'
+          description: ''
+  /api/v1/bookings/{id}/reject/:
+    post:
+      operationId: v1_bookings_reject_create
+      description: Allows the hall owner to reject a pending booking request.
+      summary: Reject booking
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: string
+          format: uuid
+        description: Booking ID
+        required: true
+      tags:
+      - Bookings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingOwnerDecisionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookingOwnerDecisionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookingOwnerDecisionRequest'
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingDetail'
+          description: ''
+  /api/v1/bookings/create-intent/:
+    post:
+      operationId: v1_bookings_create_intent_create
+      description: Creates a booking intent after validating the requested hall, date,
+        time slot, guest count and optional services. The slot is held for 15 minutes
+        while payment is completed.
+      summary: Create booking intent
+      tags:
+      - Bookings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCreateIntentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookingCreateIntentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookingCreateIntentRequest'
+        required: true
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingDetail'
+          description: ''
+  /api/v1/disputes/:
+    post:
+      operationId: v1_disputes_create
+      description: Customer lodges a formal dispute on a confirmed or completed booking.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/favorites/:
+    get:
+      operationId: v1_favorites_retrieve
+      description: Lists all saved function halls for the authenticated customer.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/favorites/{hall_id}/toggle/:
+    post:
+      operationId: v1_favorites_toggle_create
+      description: Adds or removes a venue from customer favorites.
+      parameters:
+      - in: path
+        name: hall_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/halls/:
+    get:
+      operationId: v1_halls_retrieve
+      description: Public search endpoint returning only APPROVED & ACTIVE function
+        halls.
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/halls/{id_or_slug}/:
+    get:
+      operationId: v1_halls_retrieve_2
+      description: |-
+        Public detailed view of a single function hall by slug or UUID.
+        Unapproved halls are restricted unless requested by owner or admin.
+      parameters:
+      - in: path
+        name: id_or_slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/halls/{pk_or_slug}/reviews/:
+    get:
+      operationId: v1_halls_reviews_retrieve
+      description: Public paginated list of verified customer reviews for a function
+        hall with rating distribution.
+      parameters:
+      - in: path
+        name: pk_or_slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/halls/{id}/availability/:
+    get:
+      operationId: v1_halls_availability_retrieve
+      description: Returns the day-by-day availability matrix for a function hall.
+        Year and month default to the current year and month when omitted.
+      summary: Get hall monthly availability
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: month
+        schema:
+          type: integer
+        description: Calendar month from 1 to 12. Defaults to the current month.
+      - in: path
+        name: pk
+        schema:
+          type: integer
+        description: Function hall ID.
+        required: true
+      - in: query
+        name: year
+        schema:
+          type: integer
+        description: Calendar year. Defaults to the current year.
+      tags:
+      - Availability
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HallMonthAvailabilityResponse'
+          description: ''
+        '400':
+          description: Invalid month.
+        '404':
+          description: Function hall not found.
+  /api/v1/halls/{id}/availability/block/:
+    post:
+      operationId: v1_halls_availability_block_create
+      description: Allows a hall owner to manually block a date and time slot for
+        private use or maintenance.
+      summary: Block hall time slot
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: integer
+        description: Function hall ID.
+        required: true
+      tags:
+      - Availability
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SlotBlockRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SlotBlockRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SlotBlockRequestRequest'
+        required: true
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: Slot successfully blocked.
+        '400':
+          description: Invalid request.
+        '404':
+          description: Venue not found.
+        '409':
+          description: Availability conflict.
+  /api/v1/halls/{id}/availability/check/:
+    post:
+      operationId: v1_halls_availability_check_create
+      description: Checks real-time hall availability for the requested date and time
+        slot and returns a server-calculated price quotation.
+      summary: Check hall availability and quotation
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: integer
+        description: Function hall ID.
+        required: true
+      tags:
+      - Availability
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailabilityCheckRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AvailabilityCheckRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AvailabilityCheckRequestRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HallCheckAvailabilityResponse'
+          description: ''
+        '400':
+          description: Invalid availability parameters or guest count exceeds the
+            hall's maximum capacity.
+        '404':
+          description: Function hall not found.
+  /api/v1/halls/{id}/availability/unblock/:
+    post:
+      operationId: v1_halls_availability_unblock_create
+      description: Allows a hall owner to unblock a previously blocked date and time
+        slot.
+      summary: Unblock hall time slot
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: integer
+        description: Function hall ID.
+        required: true
+      tags:
+      - Availability
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SlotUnblockRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SlotUnblockRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SlotUnblockRequestRequest'
+        required: true
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: Slot successfully unblocked.
+        '400':
+          description: Invalid request or slot was not blocked.
+        '404':
+          description: Venue not found.
+        '409':
+          description: Availability conflict.
+  /api/v1/halls/amenities/:
+    get:
+      operationId: v1_halls_amenities_retrieve
+      description: Catalog of active venue amenities (cached in Redis).
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/halls/featured/:
+    get:
+      operationId: v1_halls_featured_retrieve
+      description: Returns curated top-rated featured halls for homepage display (cached
+        in Redis).
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/health/:
+    get:
+      operationId: v1_health_retrieve
+      description: Confirms that the API server is alive and accepting requests.
+      summary: Liveness health check
+      tags:
+      - Health
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+          description: ''
+  /api/v1/notifications/:
+    get:
+      operationId: v1_notifications_retrieve
+      description: Returns user notification feed with read/unread filtering and pagination.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/notifications/{id}/read/:
+    post:
+      operationId: v1_notifications_read_create
+      description: Marks a single notification as read.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/notifications/read-all/:
+    post:
+      operationId: v1_notifications_read_all_create
+      description: Marks all notifications for the user as read.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/notifications/unread-count/:
+    get:
+      operationId: v1_notifications_unread_count_retrieve
+      description: Returns total unread notification count for the badge counter.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/owner/bookings/:
+    get:
+      operationId: v1_owner_bookings_list
+      description: Returns incoming booking requests for halls owned by the authenticated
+        owner.
+      summary: List owner bookings
+      parameters:
+      - in: query
+        name: status
+        schema:
+          type: string
+        description: Filter bookings by booking status.
+      tags:
+      - Bookings
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingList'
+          description: ''
+  /api/v1/owner/dashboard/:
+    get:
+      operationId: v1_owner_dashboard_retrieve
+      description: Overview metrics and upcoming events table for the Hall Owner dashboard
+        (Wireframe Screen 5).
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/owner/earnings/:
+    get:
+      operationId: v1_owner_earnings_retrieve
+      description: Financial earnings, commission deductions (10%), and payout settlement
+        schedule (Wireframe Screen 6).
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/owner/listings/:
+    get:
+      operationId: v1_owner_listings_retrieve
+      description: Lists all halls belonging to the authenticated Owner, or creates
+        a new draft listing.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_owner_listings_create
+      description: Lists all halls belonging to the authenticated Owner, or creates
+        a new draft listing.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/owner/listings/{id}/:
+    get:
+      operationId: v1_owner_listings_retrieve_2
+      description: Retrieves, updates, or deletes an owner's specific function hall
+        listing.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: v1_owner_listings_partial_update
+      description: Retrieves, updates, or deletes an owner's specific function hall
+        listing.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/owner/listings/{id}/images/:
+    post:
+      operationId: v1_owner_listings_images_create
+      description: Adds images to hall gallery.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/owner/listings/{id}/images/{img_id}/:
+    delete:
+      operationId: v1_owner_listings_images_destroy
+      description: Deletes an image from a hall's gallery.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: img_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/owner/listings/{id}/submit/:
+    post:
+      operationId: v1_owner_listings_submit_create
+      description: Submits a draft or rejected hall listing to the Super Admin queue
+        for verification & approval.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/owner/listings/{id}/toggle-status/:
+    post:
+      operationId: v1_owner_listings_toggle_status_create
+      description: Enables/disables public availability for approved listings.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/owner/reviews/:
+    get:
+      operationId: v1_owner_reviews_retrieve
+      description: Lists all reviews across all venues owned by the authenticated
+        owner.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/payments/booking/{booking_id}/invoice/:
+    get:
+      operationId: v1_payments_booking_invoice_retrieve
+      description: Retrieves full GST compliant tax invoice breakdown for a booking.
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/payments/initiate/:
+    post:
+      operationId: v1_payments_initiate_create
+      description: |-
+        Creates a payment order on Razorpay / payment gateway for advance or balance settlement.
+        Accessible via /api/v1/payments/initiate/ and /api/v1/payments/razorpay/order/.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/payments/invoices/:
+    get:
+      operationId: v1_payments_invoices_retrieve
+      description: Lists all invoices/payments for the authenticated customer.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/payments/razorpay/order/:
+    post:
+      operationId: v1_payments_razorpay_order_create
+      description: |-
+        Creates a payment order on Razorpay / payment gateway for advance or balance settlement.
+        Accessible via /api/v1/payments/initiate/ and /api/v1/payments/razorpay/order/.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/payments/razorpay/verify/:
+    post:
+      operationId: v1_payments_razorpay_verify_create
+      description: |-
+        Cryptographically verifies gateway signature and atomically confirms payment.
+        Accessible via /api/v1/payments/verify/ and /api/v1/payments/razorpay/verify/.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/payments/verify/:
+    post:
+      operationId: v1_payments_verify_create
+      description: |-
+        Cryptographically verifies gateway signature and atomically confirms payment.
+        Accessible via /api/v1/payments/verify/ and /api/v1/payments/razorpay/verify/.
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/payments/webhook/:
+    post:
+      operationId: v1_payments_webhook_create
+      description: |-
+        Public webhook receiver with cryptographic HMAC validation and idempotency.
+        Extracts Razorpay signature from HTTP header 'X-Razorpay-Signature'.
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ready/:
+    get:
+      operationId: v1_ready_retrieve
+      description: Checks PostgreSQL and Redis connectivity and reports whether the
+        application is ready to serve traffic.
+      summary: Readiness health check
+      tags:
+      - Health
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+          description: ''
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+          description: ''
+  /api/v1/reviews/{id}/respond/:
+    post:
+      operationId: v1_reviews_respond_create
+      description: Hall Owner responds publicly to a customer review on their venue.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - JWTAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    Amenity:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        slug:
+          oneOf:
+          - type: string
+            maxLength: 100
+            pattern: ^[-a-zA-Z0-9_]+$
+          - type: string
+            maxLength: 0
+        icon_name:
+          type: string
+          maxLength: 50
+      required:
+      - id
+      - name
+    ApprovalStatusEnum:
+      enum:
+      - DRAFT
+      - UNDER_REVIEW
+      - APPROVED
+      - REJECTED
+      - SUSPENDED
+      - DEACTIVATED
+      type: string
+      description: |-
+        * `DRAFT` - Draft
+        * `UNDER_REVIEW` - Under Review
+        * `APPROVED` - Approved
+        * `REJECTED` - Rejected
+        * `SUSPENDED` - Suspended
+        * `DEACTIVATED` - Deactivated
+    AuthResponse:
+      type: object
+      properties:
+        tokens:
+          $ref: '#/components/schemas/TokenResponse'
+        user:
+          $ref: '#/components/schemas/UserProfile'
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires_in:
+          type: integer
+      required:
+      - access_token
+      - expires_in
+      - refresh_token
+      - tokens
+      - user
+    AvailabilityCheckRequestCateringTypeEnum:
+      enum:
+      - VEG
+      - NON_VEG
+      type: string
+      description: |-
+        * `VEG` - Vegetarian
+        * `NON_VEG` - Non-Vegetarian
+    AvailabilityCheckRequestRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        slot:
+          $ref: '#/components/schemas/SlotEnum'
+        guest_count:
+          type: integer
+          minimum: 1
+        has_catering:
+          type: boolean
+          default: false
+        catering_type:
+          allOf:
+          - $ref: '#/components/schemas/AvailabilityCheckRequestCateringTypeEnum'
+          default: VEG
+        has_decor:
+          type: boolean
+          default: false
+        has_dj:
+          type: boolean
+          default: false
+      required:
+      - date
+      - slot
+    AvailabilityQuotation:
+      type: object
+      properties:
+        hall_rent:
+          type: number
+          format: double
+        has_catering:
+          type: boolean
+        catering_plate_type:
+          type: string
+        per_plate_price:
+          type: number
+          format: double
+        catering_amount:
+          type: number
+          format: double
+        has_decor:
+          type: boolean
+        decor_amount:
+          type: number
+          format: double
+        has_dj:
+          type: boolean
+        dj_amount:
+          type: number
+          format: double
+        subtotal:
+          type: number
+          format: double
+        tax_rate:
+          type: number
+          format: double
+        tax_amount:
+          type: number
+          format: double
+        total_amount:
+          type: number
+          format: double
+        advance_percentage:
+          type: number
+          format: double
+        advance_amount:
+          type: number
+          format: double
+        balance_amount:
+          type: number
+          format: double
+      required:
+      - advance_amount
+      - advance_percentage
+      - balance_amount
+      - catering_amount
+      - catering_plate_type
+      - decor_amount
+      - dj_amount
+      - hall_rent
+      - has_catering
+      - has_decor
+      - has_dj
+      - per_plate_price
+      - subtotal
+      - tax_amount
+      - tax_rate
+      - total_amount
+    BookingCancellationRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+      required:
+      - reason
+    BookingCreateIntentCateringTypeEnum:
+      enum:
+      - VEG
+      - NON_VEG
+      type: string
+      description: |-
+        * `VEG` - VEG
+        * `NON_VEG` - NON_VEG
+    BookingCreateIntentRequest:
+      type: object
+      properties:
+        hall_id:
+          type: string
+          format: uuid
+        event_type:
+          allOf:
+          - $ref: '#/components/schemas/EventTypeEnum'
+          default: WEDDING
+        event_date:
+          type: string
+          format: date
+        time_slot:
+          $ref: '#/components/schemas/TimeSlotEnum'
+        guest_count:
+          type: integer
+          minimum: 1
+        contact_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        contact_phone:
+          type: string
+          minLength: 1
+          maxLength: 20
+        special_requests:
+          type: string
+          default: ''
+        has_catering:
+          type: boolean
+          default: false
+        catering_type:
+          allOf:
+          - $ref: '#/components/schemas/BookingCreateIntentCateringTypeEnum'
+          default: VEG
+        has_decor:
+          type: boolean
+          default: false
+        has_dj:
+          type: boolean
+          default: false
+      required:
+      - contact_name
+      - contact_phone
+      - event_date
+      - guest_count
+      - hall_id
+      - time_slot
+    BookingDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        booking_number:
+          type: string
+          maxLength: 30
+        customer_id:
+          type: string
+          format: uuid
+          readOnly: true
+        customer_name:
+          type: string
+          readOnly: true
+        customer_email:
+          type: string
+          readOnly: true
+        customer_phone:
+          type: string
+          readOnly: true
+        contact_name:
+          type: string
+          maxLength: 150
+        contact_phone:
+          type: string
+          maxLength: 20
+        hall:
+          allOf:
+          - $ref: '#/components/schemas/HallList'
+          readOnly: true
+        event_type:
+          $ref: '#/components/schemas/EventTypeEnum'
+        event_date:
+          type: string
+          format: date
+        time_slot:
+          $ref: '#/components/schemas/TimeSlotEnum'
+        guest_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        special_requests:
+          type: string
+        has_catering:
+          type: boolean
+        catering_plate_type:
+          type: string
+          maxLength: 20
+        catering_plate_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        has_decor:
+          type: boolean
+        has_dj:
+          type: boolean
+        hall_rent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        catering_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        decor_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        dj_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        subtotal:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        discount_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        tax_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        tax_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        advance_percentage:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        advance_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        balance_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        amount_paid:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        status:
+          $ref: '#/components/schemas/Status115Enum'
+        owner_response_notes:
+          type: string
+        cancellation_reason:
+          type: string
+        cancellation_fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        refund_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - advance_amount
+      - balance_amount
+      - booking_number
+      - contact_name
+      - contact_phone
+      - created_at
+      - customer_email
+      - customer_id
+      - customer_name
+      - customer_phone
+      - event_date
+      - guest_count
+      - hall
+      - hall_rent
+      - id
+      - subtotal
+      - tax_amount
+      - time_slot
+      - total_amount
+      - updated_at
+    BookingList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        booking_number:
+          type: string
+          maxLength: 30
+        hall_id:
+          type: string
+          format: uuid
+          readOnly: true
+        hall_name:
+          type: string
+          readOnly: true
+        hall_slug:
+          type: string
+          readOnly: true
+        hall_locality:
+          type: string
+          readOnly: true
+        hall_city:
+          type: string
+          readOnly: true
+        primary_image:
+          type: string
+          readOnly: true
+        customer_name:
+          type: string
+          readOnly: true
+        customer_email:
+          type: string
+          readOnly: true
+        event_type:
+          $ref: '#/components/schemas/EventTypeEnum'
+        event_date:
+          type: string
+          format: date
+        time_slot:
+          $ref: '#/components/schemas/TimeSlotEnum'
+        guest_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        advance_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        balance_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        amount_paid:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        status:
+          $ref: '#/components/schemas/Status115Enum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - advance_amount
+      - balance_amount
+      - booking_number
+      - created_at
+      - customer_email
+      - customer_name
+      - event_date
+      - guest_count
+      - hall_city
+      - hall_id
+      - hall_locality
+      - hall_name
+      - hall_slug
+      - id
+      - primary_image
+      - time_slot
+      - total_amount
+    BookingOwnerDecisionRequest:
+      type: object
+      properties:
+        notes:
+          type: string
+          default: ''
+    CateringPolicyEnum:
+      enum:
+      - IN_HOUSE_ONLY
+      - OUTSIDE_ALLOWED
+      - BOTH
+      type: string
+      description: |-
+        * `IN_HOUSE_ONLY` - In-house Catering Only
+        * `OUTSIDE_ALLOWED` - Outside Catering Allowed
+        * `BOTH` - In-house & Outside Allowed
+    EmailVerificationRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          minLength: 1
+      required:
+      - token
+    EventTypeEnum:
+      enum:
+      - WEDDING
+      - RECEPTION
+      - ENGAGEMENT
+      - BIRTHDAY
+      - CORPORATE
+      - ANNIVERSARY
+      - OTHER
+      type: string
+      description: |-
+        * `WEDDING` - Wedding
+        * `RECEPTION` - Reception
+        * `ENGAGEMENT` - Engagement Ceremony
+        * `BIRTHDAY` - Birthday Party
+        * `CORPORATE` - Corporate Event / Conference
+        * `ANNIVERSARY` - Anniversary Celebration
+        * `OTHER` - Other Social Event
+    HallCheckAvailabilityData:
+      type: object
+      properties:
+        is_available:
+          type: boolean
+        slot_status:
+          type: string
+        message:
+          type: string
+        quotation:
+          $ref: '#/components/schemas/AvailabilityQuotation'
+      required:
+      - is_available
+      - message
+      - quotation
+      - slot_status
+    HallCheckAvailabilityResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/HallCheckAvailabilityData'
+      required:
+      - data
+      - message
+      - success
+    HallList:
+      type: object
+      description: |-
+        Compact serializer used for:
+        - public search results
+        - featured halls
+        - homepage listings
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        slug:
+          oneOf:
+          - type: string
+            maxLength: 280
+            pattern: ^[-a-zA-Z0-9_]+$
+          - type: string
+            maxLength: 0
+        address_line1:
+          type: string
+          maxLength: 255
+        city:
+          type: string
+          maxLength: 100
+        locality:
+          type: string
+          maxLength: 100
+        postal_code:
+          type: string
+          maxLength: 20
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        min_capacity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        max_capacity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        hall_type:
+          $ref: '#/components/schemas/HallTypeEnum'
+        base_price_morning:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        base_price_evening:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        base_price_full_day:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        advance_percentage:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        catering_policy:
+          $ref: '#/components/schemas/CateringPolicyEnum'
+        veg_plate_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        non_veg_plate_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        decor_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        dj_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        avg_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+        review_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        primary_image:
+          type: string
+          readOnly: true
+        amenities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Amenity'
+          readOnly: true
+        owner_business:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/HallListStatusEnum'
+        approval_status:
+          $ref: '#/components/schemas/ApprovalStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - address_line1
+      - amenities
+      - created_at
+      - id
+      - locality
+      - name
+      - owner_business
+      - primary_image
+    HallListStatusEnum:
+      enum:
+      - ACTIVE
+      - INACTIVE
+      type: string
+      description: |-
+        * `ACTIVE` - Active
+        * `INACTIVE` - Inactive
+    HallMonthAvailabilityData:
+      type: object
+      properties:
+        year:
+          type: integer
+        month:
+          type: integer
+        calendar: {}
+      required:
+      - calendar
+      - month
+      - year
+    HallMonthAvailabilityResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/HallMonthAvailabilityData'
+      required:
+      - data
+      - message
+      - success
+    HallTypeEnum:
+      enum:
+      - AC
+      - NON_AC
+      - OPEN_LAWN
+      - HYBRID
+      - CONVENTION
+      type: string
+      description: |-
+        * `AC` - AC Banquet Hall
+        * `NON_AC` - Non-AC Hall
+        * `OPEN_LAWN` - Open Lawn
+        * `HYBRID` - Hybrid (Lawn & Hall)
+        * `CONVENTION` - Convention Center
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        service:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+      required:
+      - service
+      - status
+      - timestamp
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+    OwnerProfile:
+      type: object
+      description: |-
+        Serializer for hall owner profile information.
+
+        The actual bank account number is write-only.
+        A masked version is returned in API responses.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        business_name:
+          type: string
+          maxLength: 255
+        registration_number:
+          type: string
+          maxLength: 100
+        pan_gst_number:
+          type: string
+          maxLength: 50
+        address:
+          type: string
+          maxLength: 255
+        city:
+          type: string
+          maxLength: 100
+        locality:
+          type: string
+          maxLength: 100
+        bank_account_holder:
+          type: string
+          maxLength: 150
+        masked_bank_account:
+          type: string
+          readOnly: true
+        bank_ifsc_code:
+          type: string
+          maxLength: 20
+        verification_status:
+          $ref: '#/components/schemas/VerificationStatusEnum'
+        payout_enabled:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - business_name
+      - created_at
+      - id
+      - masked_bank_account
+      - updated_at
+    PasswordResetConfirmRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          minLength: 1
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 8
+      required:
+      - new_password
+      - token
+    PasswordResetRequestRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+      required:
+      - email
+    PatchedUserProfileUpdateRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        avatar_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 500
+          - type: string
+            maxLength: 0
+        business_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        registration_number:
+          type: string
+          maxLength: 100
+        pan_gst_number:
+          type: string
+          maxLength: 50
+        address:
+          type: string
+          maxLength: 255
+        city:
+          type: string
+          minLength: 1
+          maxLength: 100
+        locality:
+          type: string
+          maxLength: 100
+        bank_account_holder:
+          type: string
+          maxLength: 150
+        bank_account_number:
+          type: string
+          maxLength: 50
+        bank_ifsc_code:
+          type: string
+          maxLength: 20
+    ReadinessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        dependencies:
+          type: object
+          additionalProperties: {}
+        timestamp:
+          type: string
+          format: date-time
+      required:
+      - dependencies
+      - status
+      - timestamp
+    RefreshTokenResponse:
+      type: object
+      properties:
+        tokens:
+          $ref: '#/components/schemas/TokenResponse'
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires_in:
+          type: integer
+      required:
+      - access_token
+      - expires_in
+      - refresh_token
+      - tokens
+    SlotBlockRequestRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        slot:
+          $ref: '#/components/schemas/SlotEnum'
+        reason:
+          type: string
+          maxLength: 255
+      required:
+      - date
+      - slot
+    SlotEnum:
+      enum:
+      - MORNING
+      - EVENING
+      - FULL_DAY
+      type: string
+      description: |-
+        * `MORNING` - Morning (08:00 - 14:00)
+        * `EVENING` - Evening (16:00 - 23:00)
+        * `FULL_DAY` - Full Day (08:00 - 23:00)
+    SlotUnblockRequestRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        slot:
+          $ref: '#/components/schemas/SlotEnum'
+      required:
+      - date
+      - slot
+    Status115Enum:
+      enum:
+      - PAYMENT_PENDING
+      - PENDING_OWNER_CONFIRMATION
+      - CONFIRMED
+      - REJECTED
+      - CANCELLED_BY_CUSTOMER
+      - CANCELLED_BY_OWNER
+      - CANCELLED_BY_ADMIN
+      - COMPLETED
+      - DISPUTED
+      - REFUND_PENDING
+      - REFUNDED
+      type: string
+      description: |-
+        * `PAYMENT_PENDING` - Payment Pending
+        * `PENDING_OWNER_CONFIRMATION` - Pending Owner Confirmation
+        * `CONFIRMED` - Confirmed
+        * `REJECTED` - Declined by Owner
+        * `CANCELLED_BY_CUSTOMER` - Cancelled by Customer
+        * `CANCELLED_BY_OWNER` - Cancelled by Owner
+        * `CANCELLED_BY_ADMIN` - Cancelled by Admin
+        * `COMPLETED` - Completed
+        * `DISPUTED` - Disputed
+        * `REFUND_PENDING` - Refund Pending
+        * `REFUNDED` - Refunded
+    TimeSlotEnum:
+      enum:
+      - MORNING
+      - EVENING
+      - FULL_DAY
+      type: string
+      description: |-
+        * `MORNING` - Morning (08:00 - 14:00)
+        * `EVENING` - Evening (16:00 - 23:00)
+        * `FULL_DAY` - Full Day (08:00 - 23:00)
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires_in:
+          type: integer
+      required:
+      - access_token
+      - expires_in
+      - refresh_token
+    UserLoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        full_name:
+          type: string
+          maxLength: 150
+        role:
+          allOf:
+          - $ref: '#/components/schemas/UserProfileRoleEnum'
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+        is_verified:
+          type: boolean
+          readOnly: true
+        avatar_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 500
+          - type: string
+            maxLength: 0
+        owner_profile:
+          allOf:
+          - $ref: '#/components/schemas/OwnerProfile'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - email
+      - full_name
+      - id
+      - is_active
+      - is_verified
+      - owner_profile
+      - role
+      - updated_at
+    UserProfileRoleEnum:
+      enum:
+      - CUSTOMER
+      - OWNER
+      - ADMIN
+      type: string
+      description: |-
+        * `CUSTOMER` - Customer
+        * `OWNER` - Hall Owner
+        * `ADMIN` - Super Admin
+    UserRegistrationRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+        role:
+          allOf:
+          - $ref: '#/components/schemas/UserRegistrationRoleEnum'
+          default: CUSTOMER
+        business_name:
+          type: string
+          maxLength: 255
+        registration_number:
+          type: string
+          maxLength: 100
+        pan_gst_number:
+          type: string
+          maxLength: 50
+        city:
+          type: string
+          minLength: 1
+          default: Hyderabad
+          maxLength: 100
+        locality:
+          type: string
+          maxLength: 100
+      required:
+      - email
+      - full_name
+      - password
+    UserRegistrationRoleEnum:
+      enum:
+      - CUSTOMER
+      - OWNER
+      type: string
+      description: |-
+        * `CUSTOMER` - CUSTOMER
+        * `OWNER` - OWNER
+    VerificationStatusEnum:
+      enum:
+      - PENDING
+      - VERIFIED
+      - REJECTED
+      - SUSPENDED
+      type: string
+      description: |-
+        * `PENDING` - Pending Verification
+        * `VERIFIED` - Verified
+        * `REJECTED` - Rejected
+        * `SUSPENDED` - Suspended
+  securitySchemes:
+    JWTAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

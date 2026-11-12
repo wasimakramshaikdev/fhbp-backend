@@ -1,0 +1,55 @@
+# FROM python:3.13-slim
+
+# ENV PYTHONDONTWRITEBYTECODE=1
+# ENV PYTHONUNBUFFERED=1
+
+# WORKDIR /app
+
+# # Install system dependencies
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#     build-essential \
+#     libpq-dev \
+#     curl \
+#     && rm -rf /var/lib/apt/lists/*
+
+# # Install python dependencies
+# COPY requirements.txt /app/
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# # Copy backend codebase
+# COPY backend/ /app/backend/
+
+# EXPOSE 8000
+
+# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--chdir", "/app/backend", "config.wsgi:application"]
+
+
+
+
+
+FROM python:3.13-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# Set the working directory directly to the Django app root
+WORKDIR /app/backend
+
+# Install system dependencies required for PostgreSQL & build tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements from root build context and install
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt gunicorn
+
+# Copy backend codebase into the working directory
+COPY backend/ /app/backend/
+
+EXPOSE 8000
+
+# Keep the container stable under low-memory Docker environments and allow slower auth requests to complete.
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "120", "config.wsgi:application"]
